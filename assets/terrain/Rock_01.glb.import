@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://dumocbfo3ot7a"
-path="res://.godot/imported/Crystal.glb-ee02dc654c24d12cdf261a5c6fffbc77.scn"
+uid="uid://b4c10ce2odrm2"
+path="res://.godot/imported/Rock_01.glb-e93814be0d12a458f81525ff1ad3ca87.scn"
 
 [deps]
 
-source_file="res://scenes/Crystal.glb"
-dest_files=["res://.godot/imported/Crystal.glb-ee02dc654c24d12cdf261a5c6fffbc77.scn"]
+source_file="res://assets/terrain/Rock_01.glb"
+dest_files=["res://.godot/imported/Rock_01.glb-e93814be0d12a458f81525ff1ad3ca87.scn"]
 
 [params]
 

@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://bett6vgok4wmx"
-path="res://.godot/imported/Rock_flat_01.glb-f77d12cd2ea180a4c62dc72eff349440.scn"
+path="res://.godot/imported/Rock_flat_01.glb-c1a2d8c7a86853bb73056ee02b4b6c20.scn"
 
 [deps]
 
-source_file="res://scenes/Rock_flat_01.glb"
-dest_files=["res://.godot/imported/Rock_flat_01.glb-f77d12cd2ea180a4c62dc72eff349440.scn"]
+source_file="res://assets/terrain/Rock_flat_01.glb"
+dest_files=["res://.godot/imported/Rock_flat_01.glb-c1a2d8c7a86853bb73056ee02b4b6c20.scn"]
 
 [params]
 

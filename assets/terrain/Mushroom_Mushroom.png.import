@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b6q0ckklyuhwr"
-path.s3tc="res://.godot/imported/Crystal_Crystal.png-c0ea2da8ec1b633aaf9dc9533abefdff.s3tc.ctex"
+uid="uid://wvgfy5bnkyik"
+path.s3tc="res://.godot/imported/Mushroom_Mushroom.png-14d9caab1bb113918d186645e7896729.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ generator_parameters={}
 
 [deps]
 
-source_file="res://scenes/Crystal_Crystal.png"
-dest_files=["res://.godot/imported/Crystal_Crystal.png-c0ea2da8ec1b633aaf9dc9533abefdff.s3tc.ctex"]
+source_file="res://assets/terrain/Mushroom_Mushroom.png"
+dest_files=["res://.godot/imported/Mushroom_Mushroom.png-14d9caab1bb113918d186645e7896729.s3tc.ctex"]
 
 [params]
 

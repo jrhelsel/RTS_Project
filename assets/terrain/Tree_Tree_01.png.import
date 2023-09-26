@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dc24p1msde6sm"
-path.s3tc="res://.godot/imported/Rock_01_Rock_01.png-7c1ee52b7ec98b919ffad0828a699aea.s3tc.ctex"
+uid="uid://gbs78uvnuviv"
+path.s3tc="res://.godot/imported/Tree_Tree_01.png-3ecb99ee340d604bd424d93b875a77c2.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ generator_parameters={}
 
 [deps]
 
-source_file="res://scenes/Rock_01_Rock_01.png"
-dest_files=["res://.godot/imported/Rock_01_Rock_01.png-7c1ee52b7ec98b919ffad0828a699aea.s3tc.ctex"]
+source_file="res://assets/terrain/Tree_Tree_01.png"
+dest_files=["res://.godot/imported/Tree_Tree_01.png-3ecb99ee340d604bd424d93b875a77c2.s3tc.ctex"]
 
 [params]
 

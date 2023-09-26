@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cut3irf56456r"
-path.s3tc="res://.godot/imported/Rock_flat_01_rock_flat_01.png-0c0bf9bc1f5a002a759f3dffdc11e568.s3tc.ctex"
+uid="uid://dnd7085d6ptm8"
+path.s3tc="res://.godot/imported/Rock_wall_01_Rock_wall_01.png-71ed33b30ea2f1963d4b1f7bee1d5594.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ generator_parameters={}
 
 [deps]
 
-source_file="res://scenes/Rock_flat_01_rock_flat_01.png"
-dest_files=["res://.godot/imported/Rock_flat_01_rock_flat_01.png-0c0bf9bc1f5a002a759f3dffdc11e568.s3tc.ctex"]
+source_file="res://assets/terrain/Rock_wall_01_Rock_wall_01.png"
+dest_files=["res://.godot/imported/Rock_wall_01_Rock_wall_01.png-71ed33b30ea2f1963d4b1f7bee1d5594.s3tc.ctex"]
 
 [params]
 

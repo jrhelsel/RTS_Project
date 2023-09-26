@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://dl8or1mwt6bem"
-path="res://.godot/imported/Mushroom.glb-7139ac82e5c0e3423b98d0b543365182.scn"
+uid="uid://dumocbfo3ot7a"
+path="res://.godot/imported/Crystal.glb-6b2bee3936d9298f9fd594a2a77845d1.scn"
 
 [deps]
 
-source_file="res://scenes/Mushroom.glb"
-dest_files=["res://.godot/imported/Mushroom.glb-7139ac82e5c0e3423b98d0b543365182.scn"]
+source_file="res://assets/terrain/Crystal.glb"
+dest_files=["res://.godot/imported/Crystal.glb-6b2bee3936d9298f9fd594a2a77845d1.scn"]
 
 [params]
 
