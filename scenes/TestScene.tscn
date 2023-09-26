@@ -1,0 +1,23 @@
+[gd_scene load_steps=5 format=3 uid="uid://1hgui5gbd3gw"]
+
+[ext_resource type="Script" path="res://scripts/scene_manager.gd" id="1_cloav"]
+[ext_resource type="PackedScene" uid="uid://bsmf2qndn5i6a" path="res://scenes/rts_camera_rig.tscn" id="3_xnvn8"]
+[ext_resource type="PackedScene" uid="uid://dr6574eywblff" path="res://scenes/player.tscn" id="4_8qjdv"]
+[ext_resource type="PackedScene" uid="uid://bone4q1pmrp5s" path="res://scenes/ground.tscn" id="4_uxdfi"]
+
+[node name="Test" type="Node3D"]
+script = ExtResource("1_cloav")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.539917, 0.841718, 0, -0.841718, 0.539917, 0, 42.2482, 0)
+shadow_enabled = true
+
+[node name="RTSCameraRig" parent="." instance=ExtResource("3_xnvn8")]
+
+[node name="player" parent="." instance=ExtResource("4_8qjdv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.19131, 0)
+
+[node name="TransitionCamera" type="Camera3D" parent="."]
+
+[node name="Ground" parent="." groups=["Camera"] instance=ExtResource("4_uxdfi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.61984, 0)

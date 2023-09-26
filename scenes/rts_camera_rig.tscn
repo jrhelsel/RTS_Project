@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://bsmf2qndn5i6a"]
+
+[ext_resource type="Script" path="res://scripts/rts_camera.gd" id="1_l30r0"]
+
+[node name="RTSCameraRig" type="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.99236)
+script = ExtResource("1_l30r0")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.573576, 0.819152, 0, -0.819152, 0.573576, 0, 7, 0)
