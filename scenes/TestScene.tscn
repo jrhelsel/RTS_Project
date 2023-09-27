@@ -52,8 +52,6 @@ shadow_enabled = true
 [node name="player" parent="." instance=ExtResource("4_8qjdv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.19131, 0)
 
-[node name="TransitionCamera" type="Camera3D" parent="."]
-
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_58e2v")
 
@@ -151,5 +149,3 @@ transform = Transform3D(0.763471, 0.0682992, 0.462084, -0.0797496, 0.891468, 0, 
 
 [node name="Tree7" parent="NavigationRegion3D/Terrain" instance=ExtResource("6_q4i37")]
 transform = Transform3D(1.10134, -0.0702748, 0.669354, 0.0821908, 1.28809, 0, -0.667995, 0.0426237, 1.10358, -32.9765, 1.00484, -19.9159)
-
-[connection signal="camera_changed" from="." to="player" method="_on_camera_changed"]

@@ -1,42 +1,50 @@
 extends CharacterBody3D
 
-@onready var camera_rig = $camera_rig
-@onready var animation_player = $visuals/mixamo_base/AnimationPlayer
-@onready var visuals = $visuals
+@onready var camera_rig = $CameraRig
+@onready var camera_spring = $CameraRig/CameraSpring
+
+@onready var animation_player = $Visuals/mixamo_base/AnimationPlayer
+@onready var visuals = $Visuals
+@onready var navigation_agent_3d = $NavigationAgent3D
 
 @onready var rts_camera = $"../RTSCameraRig/Camera3D"
-@onready var champion_camera = $"../RTSCameraRig/Camera3D"
+@onready var champion_camera = $CameraRig/CameraSpring/Camera3D
+@onready var transition_camera = $TransitionCamera
 
-@onready var navigation_agent_3d = $NavigationAgent3D
+@export var sensitivity_horizontal = 0.15
+@export var sensitivity_vertical = 0.08
+
+var in_champion_view
+var in_rts_view
+
+var transitioning = false
 
 var SPEED = 2.5
 const JUMP_VELOCITY = 4.5
 
 var walking_speed = 1.8
 var running_speed = 4.2
-
 var running = false
-var navigation_interrupted = false
-
-@export var sensitivity_horizontal = 0.15
-@export var sensitivity_vertical = 0.08
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 
+
+
 func _ready():
+	in_champion_view = false
+	in_rts_view = true
+	rts_camera.current = true
+	Input.mouse_mode = Input.MOUSE_MODE_CONFINED
 	animation_player.play("idle")
 	pass
-	
-	
+
+
+
 func _input(event):
-	
 	#champion camera is active
-	if $camera_rig/camera_spring/Camera3D.current:
+	if in_champion_view:
 		if event is InputEventMouseMotion:
-			#rotate_y(deg_to_rad(-event.relative.x * sensitivity_horizontal))
-			#camera_rig.rotate_x(deg_to_rad(-event.relative.y * sensitivity_vertical))
-			
 			rotation.y -= deg_to_rad(event.relative.x * sensitivity_horizontal) 
 			var vertical_rotation = camera_rig.rotation.x - deg_to_rad(event.relative.y * sensitivity_vertical)
 			vertical_rotation = clamp(vertical_rotation, -1.1, 0.35)
@@ -57,16 +65,20 @@ func _input(event):
 			var result = space.intersect_ray(ray_query)
 			#print(result)
 			
-			navigation_interrupted = false
 			navigation_agent_3d.set_target_position(result.position)
-			
+	
+	if Input.is_action_just_pressed("toggle_camera"):
+		transition()
+	
+
+
 
 func _physics_process(delta):
 	
 	#------------------------
 	# champion input control
 	#------------------------
-	if $camera_rig/camera_spring/Camera3D.current:
+	if in_champion_view:
 		if Input.is_action_pressed("run"):
 			SPEED = running_speed
 			running = true
@@ -105,36 +117,74 @@ func _physics_process(delta):
 		if navigation_agent_3d.is_navigation_finished():
 			return
 		
-		if !navigation_interrupted:
-			var target_position = navigation_agent_3d.get_next_path_position()
-			var direction = global_position.direction_to(target_position)
+		var target_position = navigation_agent_3d.get_next_path_position()
+		var direction = global_position.direction_to(target_position)
+	
+		SPEED = running_speed
+	
+		velocity = direction * SPEED
 		
-			SPEED = running_speed
-		
-			velocity = direction * SPEED
+		visuals.rotation.y = lerp_angle(visuals.rotation.y, atan2(-direction.x, -direction.z) - rotation.y, 12.0 * delta)
 			
-			visuals.rotation.y = lerp_angle(visuals.rotation.y, atan2(-direction.x, -direction.z) - rotation.y, 12.0 * delta)
+		if navigation_agent_3d.distance_to_target() > 0.2:
+			if animation_player.current_animation != "running":
+				animation_player.play("running")
 				
-			if navigation_agent_3d.distance_to_target() > 0.2:
-				if animation_player.current_animation != "running":
-					animation_player.play("running")
-					
-			else:
-				if animation_player.current_animation != "idle":
-					animation_player.play("idle")
+		else:
+			if animation_player.current_animation != "idle":
+				animation_player.play("idle")
 
 	# Add the gravity.
 	if not is_on_floor():
 		velocity.y -= gravity * delta
 		
 	move_and_slide()
-	#print(navigation_agent_3d.distance_to_target())
 
 
-#for now, the champion must stand still between camera transitions. in the future the champion should move fluidly between transistions
-func _on_camera_changed(camera):
+
+func transition():
+	if transitioning: return
+	
 	navigation_agent_3d.set_target_position(position)
-	velocity = Vector3(0,0,0)
 	if animation_player.current_animation != "idle":
 		animation_player.play("idle")
+		
+	var target_camera: Camera3D
+	var target_transform
+	
+	var champion_camera_transform_rel_to_player = camera_rig.transform * camera_spring.transform * champion_camera.transform
+	var rts_camera_transform_rel_to_player = transform.affine_inverse() * rts_camera.global_transform
+	
+	if in_champion_view:
+		Input.mouse_mode = Input.MOUSE_MODE_CONFINED
+		in_champion_view = false
+		in_rts_view = true
+		target_camera = rts_camera
+		
+		transition_camera.transform = champion_camera_transform_rel_to_player
+		target_transform = rts_camera_transform_rel_to_player
+		
+	else:
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		in_champion_view = true
+		in_rts_view = false
+		target_camera = champion_camera
+		
+		transition_camera.transform = rts_camera_transform_rel_to_player #WORKS
+		target_transform = champion_camera_transform_rel_to_player
+	
+	transition_camera.current = true
+	transitioning = true
+	
+	var tween = create_tween()
+	
+	tween.set_parallel(true)
+	tween.set_ease(Tween.EASE_IN_OUT)
+	tween.set_trans(Tween.TRANS_CUBIC)
+	tween.tween_property(transition_camera, "transform", target_transform, 1.0).from(transition_camera.transform)
+	
+	await tween.finished
+	
+	target_camera.current = true
+	transitioning = false
 
