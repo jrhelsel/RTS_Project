@@ -1,25 +1,30 @@
-extends Node
+extends Node3D
 
 @onready var rts_camera = $RTSCameraRig/Camera3D
-@onready var champion_camera = $player/camera_rig/camera_spring/Camera3D
+@onready var champion_camera = $player/CameraRig/CameraSpring/Camera3D
 
 @onready var transition_camera = $TransitionCamera
 
 signal camera_changed(camera: Camera3D)
+signal move_unit(target_position)
 
-var current_camera: Camera3D
+var champion_view
+var rts_view
+
 var transitioning = false
 
 
 
 func _ready():
 	#start scene on the rts camera
+	champion_view = false
+	rts_view = true
 	rts_camera.current = true
 	Input.mouse_mode = Input.MOUSE_MODE_CONFINED
+	
 
 
-
-func _process(delta):
+func _input(event):
 	if Input.is_action_just_pressed("toggle_camera"):
 		if rts_camera.current:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -27,7 +32,28 @@ func _process(delta):
 		else:
 			Input.mouse_mode = Input.MOUSE_MODE_CONFINED
 			transition(champion_camera, rts_camera)
+			
+			
+	if rts_camera.current && Input.is_action_just_pressed("right_mouse"):
+		find_move_position()
+
+func _process(delta):
 	pass
+
+
+func find_move_position():
+	var mouse_position = get_viewport().get_mouse_position()
+	var ray_length = 50;
+	var from = rts_camera.project_ray_origin(mouse_position)
+	var to = from + rts_camera.project_ray_normal(mouse_position) * ray_length
+	var space = get_world_3d().direct_space_state
+	var ray_query = PhysicsRayQueryParameters3D.new()
+	ray_query.from = from
+	ray_query.to = to
+	ray_query.collide_with_areas = true
+	var result = space.intersect_ray(ray_query)
+	
+	emit_signal("move_unit", result.position)
 
 
 
@@ -48,7 +74,7 @@ func transition(from: Camera3D, to: Camera3D, duration: float = 1.0):
 	tween.set_parallel(true)
 	tween.set_ease(Tween.EASE_IN_OUT)
 	tween.set_trans(Tween.TRANS_CUBIC)
-	tween.tween_property(transition_camera, "global_transform", to.global_transform, duration).from(transition_camera.global_transform)
+	tween.tween_property(transition_camera, "transform", to.transform, duration).from(transition_camera.transform)
 	tween.tween_property(transition_camera, "fov", to.fov, duration).from(transition_camera.fov)
 	
 	await tween.finished
