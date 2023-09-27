@@ -5,6 +5,7 @@ extends CharacterBody3D
 @onready var visuals = $visuals
 
 @onready var rts_camera = $"../RTSCameraRig/Camera3D"
+@onready var champion_camera = $"../RTSCameraRig/Camera3D"
 
 @onready var navigation_agent_3d = $NavigationAgent3D
 
@@ -15,6 +16,7 @@ var walking_speed = 1.8
 var running_speed = 4.2
 
 var running = false
+var navigation_interrupted = false
 
 @export var sensitivity_horizontal = 0.15
 @export var sensitivity_vertical = 0.08
@@ -30,10 +32,15 @@ func _ready():
 func _input(event):
 	
 	#champion camera is active
-	if $camera_rig/Camera3D.current:
+	if $camera_rig/camera_spring/Camera3D.current:
 		if event is InputEventMouseMotion:
-			rotate_y(deg_to_rad(-event.relative.x * sensitivity_horizontal))
-			camera_rig.rotate_x(deg_to_rad(-event.relative.y * sensitivity_vertical))
+			#rotate_y(deg_to_rad(-event.relative.x * sensitivity_horizontal))
+			#camera_rig.rotate_x(deg_to_rad(-event.relative.y * sensitivity_vertical))
+			
+			rotation.y -= deg_to_rad(event.relative.x * sensitivity_horizontal) 
+			var vertical_rotation = camera_rig.rotation.x - deg_to_rad(event.relative.y * sensitivity_vertical)
+			vertical_rotation = clamp(vertical_rotation, -1.1, 0.35)
+			camera_rig.rotation.x = vertical_rotation
 			
 	#rts camera is active
 	else: 
@@ -48,15 +55,18 @@ func _input(event):
 			ray_query.to = to
 			ray_query.collide_with_areas = true
 			var result = space.intersect_ray(ray_query)
-			print(result)
+			#print(result)
 			
+			navigation_interrupted = false
 			navigation_agent_3d.set_target_position(result.position)
 			
 
 func _physics_process(delta):
 	
-	#champion input control
-	if $camera_rig/Camera3D.current: #if in champion perspective, use champion controls
+	#------------------------
+	# champion input control
+	#------------------------
+	if $camera_rig/camera_spring/Camera3D.current:
 		if Input.is_action_pressed("run"):
 			SPEED = running_speed
 			running = true
@@ -64,12 +74,9 @@ func _physics_process(delta):
 			SPEED = walking_speed
 			running = false
 
-		# Handle Jump.
 		if Input.is_action_just_pressed("jump") and is_on_floor():
 			velocity.y = JUMP_VELOCITY
 
-		# Get the input direction and handle the movement/deceleration.
-		# As good practice, you should replace UI actions with custom gameplay actions.
 		var input_dir = Input.get_vector("left", "right", "forward", "backward")
 		var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 		if direction:
@@ -80,31 +87,54 @@ func _physics_process(delta):
 				if animation_player.current_animation != "walking":
 					animation_player.play("walking")
 					
-			var movement_direction = position + direction
-			visuals.rotation.y = lerp_angle(visuals.rotation.y, atan2(-direction.x, -direction.z) - rotation.y, 0.2)
+			visuals.rotation.y = lerp_angle(visuals.rotation.y, atan2(-direction.x, -direction.z) - rotation.y, 10.0 * delta)
 			
 			velocity.x = direction.x * SPEED
 			velocity.z = direction.z * SPEED
+			
 		else:
 			if animation_player.current_animation != "idle":
 				animation_player.play("idle")
 			velocity.x = move_toward(velocity.x, 0, SPEED)
 			velocity.z = move_toward(velocity.z, 0, SPEED)
 			
-			
-	#rts input control
+	#------------------
+	# rts input control
+	#------------------
 	else:
 		if navigation_agent_3d.is_navigation_finished():
 			return
 		
-		var target_position = navigation_agent_3d.get_next_path_position()
-		var direction = global_position.direction_to(target_position)
-	
-		velocity = direction * SPEED
-
+		if !navigation_interrupted:
+			var target_position = navigation_agent_3d.get_next_path_position()
+			var direction = global_position.direction_to(target_position)
+		
+			SPEED = running_speed
+		
+			velocity = direction * SPEED
+			
+			visuals.rotation.y = lerp_angle(visuals.rotation.y, atan2(-direction.x, -direction.z) - rotation.y, 12.0 * delta)
+				
+			if navigation_agent_3d.distance_to_target() > 0.2:
+				if animation_player.current_animation != "running":
+					animation_player.play("running")
+					
+			else:
+				if animation_player.current_animation != "idle":
+					animation_player.play("idle")
 
 	# Add the gravity.
 	if not is_on_floor():
 		velocity.y -= gravity * delta
 		
 	move_and_slide()
+	#print(navigation_agent_3d.distance_to_target())
+
+
+#for now, the champion must stand still between camera transitions. in the future the champion should move fluidly between transistions
+func _on_camera_changed(camera):
+	navigation_agent_3d.set_target_position(position)
+	velocity = Vector3(0,0,0)
+	if animation_player.current_animation != "idle":
+		animation_player.play("idle")
+

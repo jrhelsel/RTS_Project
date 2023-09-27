@@ -1,9 +1,11 @@
 extends Node
 
 @onready var rts_camera = $RTSCameraRig/Camera3D
-@onready var champion_camera = $player/camera_rig/Camera3D
+@onready var champion_camera = $player/camera_rig/camera_spring/Camera3D
 
 @onready var transition_camera = $TransitionCamera
+
+signal camera_changed(camera: Camera3D)
 
 var current_camera: Camera3D
 var transitioning = false
@@ -32,6 +34,7 @@ func _process(delta):
 func transition(from: Camera3D, to: Camera3D, duration: float = 1.0):
 	if transitioning: return
 	
+	emit_signal("camera_changed", to)
 	var tween = create_tween()
 	
 	transition_camera.fov = from.fov
@@ -52,3 +55,4 @@ func transition(from: Camera3D, to: Camera3D, duration: float = 1.0):
 	
 	to.current = true
 	transitioning = false
+

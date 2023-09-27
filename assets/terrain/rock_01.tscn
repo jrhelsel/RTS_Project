@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://83d76c2833f1"]
+
+[ext_resource type="PackedScene" uid="uid://b4c10ce2odrm2" path="res://assets/terrain/Rock_01.glb" id="1_b3mrh"]
+
+[node name="Rock_01" instance=ExtResource("1_b3mrh")]
+
+[node name="StaticBody3D" parent="Cube_001" index="0"]
+collision_layer = 3
+collision_mask = 3
