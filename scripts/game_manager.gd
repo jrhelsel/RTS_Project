@@ -1,5 +1,8 @@
 extends Node3D
 
+var players = {}
+var debug = {}
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	

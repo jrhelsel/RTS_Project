@@ -19,95 +19,94 @@ var in_rts_view
 
 var transitioning = false
 
-var SPEED = 2.5
+var SPEED = 4.2
 const JUMP_VELOCITY = 4.5
 
-var walking_speed = 1.8
-var running_speed = 4.2
-var running = false
-
 var navigation_interrupted = false
+
+var multiplayer_authorized = false
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 func _ready():
-	in_champion_view = false
-	in_rts_view = true
-	rts_camera.current = true
-	Input.mouse_mode = Input.MOUSE_MODE_CONFINED
-	animation_player.play("idle")
-	pass
+	$MultiplayerSynchronizer.set_multiplayer_authority(str($"..".name).to_int())
+	if $MultiplayerSynchronizer.get_multiplayer_authority() == multiplayer.get_unique_id():
+		
+		multiplayer_authorized = true
+		
+		print($"..".name)
+		print("Authorized:")
+		print(multiplayer_authorized)
+
+		in_champion_view = false
+		in_rts_view = true
+		rts_camera.current = true
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		animation_player.play("idle")
 
 
 
 func _input(event):
-	#champion camera is active
-	if in_champion_view:
-		#camera rotation
-		if event is InputEventMouseMotion:
-			rotation.y -= deg_to_rad(event.relative.x * sensitivity_horizontal) 
-			visuals.rotation.y += deg_to_rad(event.relative.x * sensitivity_horizontal)
-			if !transitioning:
-				var vertical_rotation = camera_rig.rotation.x - deg_to_rad(event.relative.y * sensitivity_vertical)
-				vertical_rotation = clamp(vertical_rotation, -1.1, 0.35)
-				camera_rig.rotation.x = vertical_rotation
+	if multiplayer_authorized:
+		#champion camera is active
+		if in_champion_view:
+			#camera rotation
+			if event is InputEventMouseMotion:
+				rotation.y -= deg_to_rad(event.relative.x * sensitivity_horizontal) 
+				visuals.rotation.y += deg_to_rad(event.relative.x * sensitivity_horizontal)
+				if !transitioning:
+					var vertical_rotation = camera_rig.rotation.x - deg_to_rad(event.relative.y * sensitivity_vertical)
+					vertical_rotation = clamp(vertical_rotation, -1.1, 0.35)
+					camera_rig.rotation.x = vertical_rotation
+			
+			if Input.get_vector("left", "right", "forward", "backward"):
+				navigation_agent_3d.set_target_position(position)
+				navigation_interrupted = true
+
+
+		if Input.is_action_just_pressed("right_mouse"):
+			var action = action_raycast()
+			handle_action(action)
 		
-		if Input.get_vector("left", "right", "forward", "backward"):
-			navigation_agent_3d.set_target_position(position)
-			navigation_interrupted = true
-
-
-	if Input.is_action_just_pressed("right_mouse"):
-		var action = action_raycast()
-		handle_action(action)
-	
-	if Input.is_action_just_pressed("toggle_camera"):
-		transition()
+		if Input.is_action_just_pressed("toggle_camera"):
+			transition()
 	
 
 
 
 func _physics_process(delta):
 	
-	if in_champion_view:
-		if navigation_interrupted:
-			champion_movement(delta)
-		else:
-			rts_movement(delta)
-			
-	else:
-		rts_movement(delta)
-	
 	# Add the gravity.
 	if not is_on_floor():
 		velocity.y -= gravity * delta
 		
 	move_and_slide()
+	
+	if multiplayer_authorized:
+		if in_champion_view:
+			if navigation_interrupted:
+				champion_movement(delta)
+			else:
+				rts_movement(delta)
+				
+		else:
+			rts_movement(delta)
+
+
 
 
 
 func champion_movement(delta):
-	if Input.is_action_pressed("run"):
-		SPEED = running_speed
-		running = true
-	else:
-		SPEED = walking_speed
-		running = false
-
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
 
 	var input_dir = Input.get_vector("left", "right", "forward", "backward")
 	var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	if direction:
-		if running:
-			if animation_player.current_animation != "running":
-				animation_player.play("running")
-		else:
-			if animation_player.current_animation != "walking":
-				animation_player.play("walking")
-				
+		if animation_player.current_animation != "running":
+			animation_player.play("running")
+		
 		visuals.rotation.y = lerp_angle(visuals.rotation.y, atan2(-direction.x, -direction.z) - rotation.y, 10.0 * delta)
 		
 		velocity.x = direction.x * SPEED
@@ -126,8 +125,6 @@ func rts_movement(delta):
 	
 	var target_position = navigation_agent_3d.get_next_path_position()
 	var direction = global_position.direction_to(target_position)
-	
-	SPEED = running_speed
 	
 	velocity = direction * SPEED
 	
@@ -155,7 +152,7 @@ func transition():
 	var rts_camera_transform_rel_to_player = transform.affine_inverse() * rts_camera.global_transform
 	
 	if in_champion_view:
-		Input.mouse_mode = Input.MOUSE_MODE_CONFINED
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		in_champion_view = false
 		in_rts_view = true
 		target_camera = rts_camera
