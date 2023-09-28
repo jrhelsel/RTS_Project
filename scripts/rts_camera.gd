@@ -1,6 +1,6 @@
 extends Node3D
 
-@export var pan_speed = 50.0
+@export var pan_speed = 30.0
 
 var zooming = false
 
@@ -15,13 +15,13 @@ func _process(delta):
 		var mouse_pos = get_viewport().get_mouse_position()
 		
 		if Input.get_mouse_mode() == Input.MOUSE_MODE_CONFINED:
-			if mouse_pos.x < 10:
+			if Input.is_action_pressed("pan_left") or mouse_pos.x < 10:
 				position.x -= pan_speed * delta
-			elif mouse_pos.x > viewport_size.x - 10:
+			elif Input.is_action_pressed("pan_right") or mouse_pos.x > viewport_size.x - 10:
 				position.x += pan_speed * delta
-			if mouse_pos.y < 10:
+			if Input.is_action_pressed("pan_up") or mouse_pos.y < 10:
 				position.z -= pan_speed * delta
-			elif mouse_pos.y > viewport_size.y - 10:
+			elif Input.is_action_pressed("pan_down") or mouse_pos.y > viewport_size.y - 10:
 				position.z += pan_speed * delta
 		
 		

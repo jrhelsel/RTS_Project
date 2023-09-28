@@ -1,14 +1,15 @@
-[gd_scene load_steps=14 format=3 uid="uid://1hgui5gbd3gw"]
+[gd_scene load_steps=15 format=3 uid="uid://1hgui5gbd3gw"]
 
 [ext_resource type="Script" path="res://scripts/scene_manager.gd" id="1_cloav"]
 [ext_resource type="PackedScene" uid="uid://bsmf2qndn5i6a" path="res://scenes/rts_camera_rig.tscn" id="3_xnvn8"]
 [ext_resource type="PackedScene" uid="uid://dr6574eywblff" path="res://scenes/player.tscn" id="4_8qjdv"]
-[ext_resource type="PackedScene" uid="uid://bone4q1pmrp5s" path="res://scenes/ground.tscn" id="4_uxdfi"]
+[ext_resource type="PackedScene" uid="uid://bone4q1pmrp5s" path="res://assets/prefabs/ground.tscn" id="4_uxdfi"]
 [ext_resource type="PackedScene" uid="uid://b4c10ce2odrm2" path="res://assets/terrain/Rock_01.glb" id="5_bt7v2"]
-[ext_resource type="PackedScene" uid="uid://dqc577ek54x5g" path="res://scenes/tree.tscn" id="6_q4i37"]
+[ext_resource type="PackedScene" uid="uid://dqc577ek54x5g" path="res://assets/prefabs/tree.tscn" id="6_q4i37"]
 [ext_resource type="PackedScene" uid="uid://bkmfi2ihegb1l" path="res://assets/terrain/Rock_wall_01.glb" id="7_ngjm8"]
 [ext_resource type="PackedScene" uid="uid://bett6vgok4wmx" path="res://assets/terrain/Rock_flat_01.glb" id="8_cllhr"]
 [ext_resource type="PackedScene" uid="uid://dumocbfo3ot7a" path="res://assets/terrain/Crystal.glb" id="9_3s6em"]
+[ext_resource type="PackedScene" uid="uid://bcvs4hoeis7ni" path="res://assets/prefabs/rock_01.tscn" id="10_bu63o"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ssm0o"]
 sky_top_color = Color(0.411765, 0.745098, 0.886275, 1)
@@ -78,15 +79,6 @@ transform = Transform3D(0.11552, 0, 0.772314, 0.0938672, 0.775117, -0.0140403, -
 [node name="Tree4" parent="NavigationRegion3D/Terrain" instance=ExtResource("6_q4i37")]
 transform = Transform3D(-0.21374, -0.0286153, -0.75054, 0.0824734, 0.774726, -0.0530244, 0.746544, -0.0937796, -0.209027, -25.0909, 0.97556, -5.81281)
 
-[node name="Rock_02" parent="NavigationRegion3D/Terrain" instance=ExtResource("5_bt7v2")]
-transform = Transform3D(0.109448, -0.0994676, -0.989003, 0.0313951, 0.99483, -0.0965793, 0.993497, -0.0204794, 0.112005, -6.37535, -0.769552, -14.2514)
-
-[node name="Rock_03" parent="NavigationRegion3D/Terrain" instance=ExtResource("5_bt7v2")]
-transform = Transform3D(0.725902, 0.0603944, 0, -0.0603363, 0.725205, -0.0319252, -0.002647, 0.0318153, 0.727711, -5.33721, -0.582832, -13.7342)
-
-[node name="Rock_04" parent="NavigationRegion3D/Terrain" instance=ExtResource("5_bt7v2")]
-transform = Transform3D(-0.576948, -0.0849961, 0.0211355, -0.082206, 0.574103, 0.0647198, -0.0302196, 0.0610094, -0.579573, -6.10521, -0.227103, -13.1758)
-
 [node name="Tree5" parent="NavigationRegion3D/Terrain" instance=ExtResource("6_q4i37")]
 transform = Transform3D(-0.174874, -0.0774847, -0.981537, -0.0135909, 0.996994, -0.0762834, 0.984497, 0, -0.175401, 3.16743, 1.03032, -19.0845)
 
@@ -149,3 +141,12 @@ transform = Transform3D(0.763471, 0.0682992, 0.462084, -0.0797496, 0.891468, 0, 
 
 [node name="Tree7" parent="NavigationRegion3D/Terrain" instance=ExtResource("6_q4i37")]
 transform = Transform3D(1.10134, -0.0702748, 0.669354, 0.0821908, 1.28809, 0, -0.667995, 0.0426237, 1.10358, -32.9765, 1.00484, -19.9159)
+
+[node name="Rock_01" parent="." instance=ExtResource("10_bu63o")]
+transform = Transform3D(0.186199, -0.147857, -0.971323, 0.109488, 0.985577, -0.129038, 0.976393, -0.0823213, 0.199702, -6.47825, -0.793114, -14.1648)
+
+[node name="Rock_02" parent="." instance=ExtResource("10_bu63o")]
+transform = Transform3D(0.735092, 0.0925678, 0.106481, -0.0930645, 0.742695, -0.00318023, -0.106047, -0.0101159, 0.74089, -5.47297, -0.674002, -13.8163)
+
+[node name="Rock_03" parent="." instance=ExtResource("10_bu63o")]
+transform = Transform3D(-0.464928, -0.0875408, 0.353007, -0.0665962, 0.583735, 0.0570473, -0.357551, 0.00510591, -0.469646, -6.02532, -0.361264, -13.1167)
