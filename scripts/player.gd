@@ -8,6 +8,7 @@ extends CharacterBody3D
 @onready var navigation_agent_3d = $NavigationAgent3D
 
 @onready var rts_camera = $"../RTSCameraRig/Camera3D"
+@onready var rts_camera_rig = $"../RTSCameraRig"
 @onready var champion_camera = $CameraRig/CameraSpring/Camera3D
 @onready var transition_camera = $TransitionCamera
 
@@ -29,69 +30,66 @@ var multiplayer_authorized = false
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 
-func _ready():
+func _enter_tree():
 	$MultiplayerSynchronizer.set_multiplayer_authority(str($"..".name).to_int())
-	if $MultiplayerSynchronizer.get_multiplayer_authority() == multiplayer.get_unique_id():
-		
-		multiplayer_authorized = true
-		
-		print($"..".name)
-		print("Authorized:")
-		print(multiplayer_authorized)
 
-		in_champion_view = false
-		in_rts_view = true
-		rts_camera.current = true
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-		animation_player.play("idle")
+func _ready():
+	if !$MultiplayerSynchronizer.is_multiplayer_authority(): return
+
+	in_champion_view = false
+	in_rts_view = true
+	rts_camera.current = true
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	animation_player.play("idle")
 
 
 
 func _input(event):
-	if multiplayer_authorized:
-		#champion camera is active
-		if in_champion_view:
-			#camera rotation
-			if event is InputEventMouseMotion:
-				rotation.y -= deg_to_rad(event.relative.x * sensitivity_horizontal) 
-				visuals.rotation.y += deg_to_rad(event.relative.x * sensitivity_horizontal)
-				if !transitioning:
-					var vertical_rotation = camera_rig.rotation.x - deg_to_rad(event.relative.y * sensitivity_vertical)
-					vertical_rotation = clamp(vertical_rotation, -1.1, 0.35)
-					camera_rig.rotation.x = vertical_rotation
-			
-			if Input.get_vector("left", "right", "forward", "backward"):
-				navigation_agent_3d.set_target_position(position)
-				navigation_interrupted = true
-
-
-		if Input.is_action_just_pressed("right_mouse"):
-			var action = action_raycast()
-			handle_action(action)
+	if !$MultiplayerSynchronizer.is_multiplayer_authority(): return
+	
+	#champion camera is active
+	if in_champion_view:
+		#camera rotation
+		if event is InputEventMouseMotion:
+			rotation.y -= deg_to_rad(event.relative.x * sensitivity_horizontal) 
+			visuals.rotation.y += deg_to_rad(event.relative.x * sensitivity_horizontal)
+			if !transitioning:
+				var vertical_rotation = camera_rig.rotation.x - deg_to_rad(event.relative.y * sensitivity_vertical)
+				vertical_rotation = clamp(vertical_rotation, -1.1, 0.35)
+				camera_rig.rotation.x = vertical_rotation
 		
-		if Input.is_action_just_pressed("toggle_camera"):
-			transition()
+		if Input.get_vector("left", "right", "forward", "backward"):
+			navigation_agent_3d.set_target_position(position)
+			navigation_interrupted = true
+
+
+	if Input.is_action_just_pressed("right_mouse"):
+		var action = action_raycast()
+		handle_action(action)
+	
+	if Input.is_action_just_pressed("toggle_camera"):
+		transition()
 	
 
 
 
 func _physics_process(delta):
-	
-	# Add the gravity.
+	if !$MultiplayerSynchronizer.is_multiplayer_authority(): return
+
+	if in_champion_view:
+		if navigation_interrupted:
+			champion_movement(delta)
+		else:
+			rts_movement(delta)
+			
+	else:
+		rts_movement(delta)
+		
+			# Add the gravity.
 	if not is_on_floor():
 		velocity.y -= gravity * delta
 		
 	move_and_slide()
-	
-	if multiplayer_authorized:
-		if in_champion_view:
-			if navigation_interrupted:
-				champion_movement(delta)
-			else:
-				rts_movement(delta)
-				
-		else:
-			rts_movement(delta)
 
 
 
@@ -149,7 +147,7 @@ func transition():
 	var target_transform
 	
 	var champion_camera_transform_rel_to_player = camera_rig.transform * camera_spring.transform * champion_camera.transform
-	var rts_camera_transform_rel_to_player = transform.affine_inverse() * rts_camera.global_transform
+	var rts_camera_transform_rel_to_player = transform.affine_inverse() * rts_camera_rig.transform * rts_camera.transform
 	
 	if in_champion_view:
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE

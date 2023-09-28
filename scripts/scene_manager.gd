@@ -13,6 +13,7 @@ func _ready():
 			"player": current_player,
 			"id": GameManager.players[i].id
 		}
+		
 		for spawn in get_tree().get_nodes_in_group("PlayerSpawnPoint"):
 			if spawn.name == str(index):
 				current_player.global_position = spawn.global_position
