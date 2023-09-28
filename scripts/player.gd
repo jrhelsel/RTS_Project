@@ -31,8 +31,6 @@ var navigation_interrupted = false
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 
-
-
 func _ready():
 	in_champion_view = false
 	in_rts_view = true
@@ -55,7 +53,9 @@ func _input(event):
 				vertical_rotation = clamp(vertical_rotation, -1.1, 0.35)
 				camera_rig.rotation.x = vertical_rotation
 		
-		
+		if Input.get_vector("left", "right", "forward", "backward"):
+			navigation_agent_3d.set_target_position(position)
+			navigation_interrupted = true
 
 
 	if Input.is_action_just_pressed("right_mouse"):
@@ -71,8 +71,11 @@ func _input(event):
 func _physics_process(delta):
 	
 	if in_champion_view:
-		champion_movement(delta)
-		
+		if navigation_interrupted:
+			champion_movement(delta)
+		else:
+			rts_movement(delta)
+			
 	else:
 		rts_movement(delta)
 	
@@ -118,6 +121,7 @@ func champion_movement(delta):
 
 func rts_movement(delta):
 	if navigation_agent_3d.is_navigation_finished():
+		velocity = Vector3(0,0,0) #dirty fix TODO
 		return
 	
 	var target_position = navigation_agent_3d.get_next_path_position()
@@ -141,7 +145,6 @@ func transition():
 	#transitions the camera from the current view to the other
 	if transitioning: return
 	
-	navigation_agent_3d.set_target_position(position)
 	if animation_player.current_animation != "idle":
 		animation_player.play("idle")
 		
@@ -212,3 +215,4 @@ func action_raycast():
 func handle_action(action):
 	#for now this just handles walking to a target location. actions in the future will include clicking resource nodes, enemies, etc.
 	navigation_agent_3d.set_target_position(action.position)
+	navigation_interrupted = false
