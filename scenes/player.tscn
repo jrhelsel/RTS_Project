@@ -1,17 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://brq27yhbab3w"]
+[gd_scene load_steps=3 format=3 uid="uid://brq27yhbab3w"]
 
-[ext_resource type="Script" path="res://scripts/player.gd" id="1_gq6ki"]
 [ext_resource type="PackedScene" uid="uid://dr6574eywblff" path="res://scenes/champion.tscn" id="1_hl5tm"]
 [ext_resource type="PackedScene" uid="uid://bsmf2qndn5i6a" path="res://scenes/rts_camera_rig.tscn" id="2_rp0jf"]
 
 [node name="player" type="Node3D"]
-script = ExtResource("1_gq6ki")
 
 [node name="champion" parent="." instance=ExtResource("1_hl5tm")]
-sensitivity_horizontal = 0.15
-sensitivity_vertical = 0.08
 
 [node name="RTSCameraRig" parent="." instance=ExtResource("2_rp0jf")]
-
-[connection signal="action_raycast_hit" from="." to="champion" method="_on_action_raycast_hit"]
-[connection signal="camera_transition" from="." to="champion" method="_on_player_camera_transition"]
