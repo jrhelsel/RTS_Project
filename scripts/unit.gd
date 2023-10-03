@@ -7,10 +7,15 @@ extends CharacterBody3D
 var SPEED = 4.2
 const JUMP_VELOCITY = 4.5
 
+var unit_id: int
+
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 
-
+func _ready():
+	$"..".action_raycast_hit.connect(_on_action_raycast_hit)
+	
+	
 func _physics_process(delta):
 	
 	rts_movement(delta)
@@ -42,3 +47,15 @@ func rts_movement(delta):
 func handle_action(action):
 	#for now this just handles walking to a target location. actions in the future will include clicking resource nodes, enemies, etc.
 	navigation_agent_3d.set_target_position(action.position)
+
+func set_id(id):
+	unit_id = id
+
+func get_id():
+	return unit_id
+
+
+#signal response functions
+
+func _on_action_raycast_hit(action):
+	handle_action(action)

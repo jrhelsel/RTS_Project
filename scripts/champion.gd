@@ -6,8 +6,8 @@ extends "res://scripts/unit.gd"
 @onready var champion_camera = $CameraRig/CameraSpring/Camera3D
 
 #configurable values
-@export var sensitivity_horizontal = 0.15
-@export var sensitivity_vertical = 0.08
+var sensitivity_horizontal = 0.15
+var sensitivity_vertical = 0.08
 
 #state and function variables
 var transition_camera: Camera3D
@@ -27,6 +27,8 @@ func _enter_tree():
 
 func _ready():
 	if !$MultiplayerSynchronizer.is_multiplayer_authority(): return
+
+	unit_id = 0
 
 	in_champion_view = false
 	in_rts_view = true
@@ -102,8 +104,9 @@ func champion_movement(delta):
 
 func handle_action(action):
 	#for now this just handles walking to a target location. actions in the future will include clicking resource nodes, enemies, etc.
-	navigation_agent_3d.set_target_position(action.position)
-	navigation_interrupted = false
+	if !Input.get_vector("left", "right", "forward", "backward"):	
+		navigation_agent_3d.set_target_position(action.position)
+		navigation_interrupted = false
 
 
 

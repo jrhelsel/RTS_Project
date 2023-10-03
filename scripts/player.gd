@@ -10,6 +10,9 @@ var in_rts_view
 var transitioning = false
 var navigation_interrupted = false
 
+var next_unit_id: int = 1
+var unit_count: int = 1
+
 signal action_raycast_hit
 signal camera_transition
 
@@ -33,7 +36,12 @@ func _input(event):
 	
 	if Input.is_action_just_pressed("toggle_camera"):
 		transition()
-
+		
+	if Input.is_action_just_pressed("spawn_unit"):
+		spawn_unit()
+	
+	if Input.is_action_just_pressed("print_debug_message"):
+		print(str(get_tree().get_nodes_in_group("units")))
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -119,7 +127,15 @@ func action_raycast():
 
 
 func spawn_unit():
-	pass
+	var new_unit = preload("res://scenes/unit.tscn").instantiate()
+	add_child(new_unit)
+	new_unit.position = position + Vector3(2, 1, 2)
+	new_unit.add_to_group("units")
+	new_unit.set_id(next_unit_id)
+	
+	next_unit_id += 1
+	unit_count += 1
+	
 	
 func remove_unit():
 	pass
