@@ -70,18 +70,6 @@ func _input(event):
 			
 		if Input.is_action_just_pressed("jump") and is_on_floor():
 			velocity.y = JUMP_VELOCITY
-	
-	#rts view inputs
-	else: #in_rts_view
-		pass
-
-	#inputs same for both views
-	if Input.is_action_just_pressed("right_mouse"):
-		var action = action_raycast()
-		handle_action(action)
-	
-	if Input.is_action_just_pressed("toggle_camera"):
-		transition()
 
 
 
@@ -143,85 +131,24 @@ func rts_movement(delta):
 	
 	visuals.rotation.y = lerp_angle(visuals.rotation.y, atan2(-direction.x, -direction.z) - rotation.y, 12.0 * delta)
 
-func transition():
-	#transitions the camera from the current view to the other
-	if transitioning: return
-	
-	if navigation_interrupted:
-		velocity = Vector3(0,velocity.y,0)
-	
-	if animation_player.current_animation != "idle":
-		animation_player.play("idle")
-		
-	var target_camera: Camera3D
-	var target_transform: Transform3D
-	
-	var champion_camera_transform_rel_to_player = transform * $CameraRig.transform * $CameraRig/CameraSpring.transform * champion_camera.transform
-	var rts_camera_transform_rel_to_player = $"../RTSCameraRig".transform * rts_camera.transform
-	
-	if in_champion_view: #going from champion view to rts view
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-		in_champion_view = false
-		in_rts_view = true
-		
-		target_camera = rts_camera
-		transition_camera = $"../RTSCameraRig/Camera3D/ToRTSTransitionCamera"
-		
-		target_transform = transition_camera.transform
-		transition_camera.transform = rts_camera_transform_rel_to_player.affine_inverse() * champion_camera_transform_rel_to_player
-		
-	else: #going from rts view to champion view
-		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-		in_champion_view = true
-		in_rts_view = false
-		
-		target_camera = champion_camera
-		transition_camera = $CameraRig/CameraSpring/Camera3D/ToChampionTransitionCamera
-		
-		target_transform = transition_camera.transform
-		transition_camera.transform = champion_camera_transform_rel_to_player.affine_inverse() * rts_camera_transform_rel_to_player
-	
-	transition_camera.current = true
-	transitioning = true
-	
-	var tween = create_tween()
-	
-	tween.set_parallel(true)
-	tween.set_ease(Tween.EASE_IN_OUT)
-	tween.set_trans(Tween.TRANS_CUBIC)
-	tween.tween_property(transition_camera, "transform", target_transform, 1.0).from(transition_camera.transform)
-	
-	await tween.finished #code resumes at this point when the tween has finished (like a thread, but not quite)
-	
-	target_camera.current = true
-	transitioning = false
-
-func action_raycast():
-	#casts a ray from the appropriate perspective and returns it
-	var current_camera: Camera3D
-	var cast_position = get_viewport().get_mouse_position()
-	
-	if transitioning:
-		current_camera = transition_camera
-	elif in_champion_view:
-		current_camera = champion_camera
-		cast_position = get_viewport().content_scale_size / 2
-	else:
-		current_camera = rts_camera
-	
-	var from = current_camera.project_ray_origin(cast_position)
-	var to = from + current_camera.project_ray_normal(cast_position) * 100 #ray length
-	var space = get_world_3d().direct_space_state
-	var ray_query = PhysicsRayQueryParameters3D.new()
-	ray_query.from = from
-	ray_query.to = to
-	ray_query.collide_with_areas = true
-	var result = space.intersect_ray(ray_query)
-	#print(result) #debug
-	
-	return result
-
 func handle_action(action):
 	#for now this just handles walking to a target location. actions in the future will include clicking resource nodes, enemies, etc.
 	navigation_agent_3d.set_target_position(action.position)
 	navigation_interrupted = false
+
+
+func _on_action_raycast_hit(action):
+	handle_action(action)
+
+
+func _on_camera_transition():
+	if in_champion_view:
+		in_champion_view = false
+		in_rts_view = true
+	else:
+		in_champion_view = true
+		in_rts_view = false
+		
+	if navigation_interrupted:
+		velocity = Vector3(0,velocity.y,0)
+	
