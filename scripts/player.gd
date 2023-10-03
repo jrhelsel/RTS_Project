@@ -21,7 +21,9 @@ signal camera_transition
 
 
 func _ready():
-	pass # Replace with function body.
+	in_rts_view = true
+	$RTSCameraRig.position.x = lerp($RTSCameraRig.position.x, $champion.position.x, 1)
+	$RTSCameraRig.position.z = lerp($RTSCameraRig.position.z, $champion.position.z + 5, 1)
 
 
 
@@ -42,6 +44,8 @@ func _input(event):
 		
 	if Input.is_action_just_pressed("spawn_unit"):
 		spawn_unit.rpc()
+		
+
 	
 	if Input.is_action_just_pressed("print_debug_message"):
 		print("Unit group: " + unit_group)
@@ -51,7 +55,11 @@ func _input(event):
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	pass
+	if Input.is_action_pressed("focus_champion"):
+		if Input.is_action_just_pressed("focus_champion"):
+			$RTSCameraRig.reset_zoom()
+		$RTSCameraRig.position.x = lerp($RTSCameraRig.position.x, $champion.position.x, 1)
+		$RTSCameraRig.position.z = lerp($RTSCameraRig.position.z, $champion.position.z + 5, 1)
 
 
 func transition():
