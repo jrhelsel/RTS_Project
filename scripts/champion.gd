@@ -1,24 +1,13 @@
-extends CharacterBody3D
+extends "res://scripts/unit.gd"
 
 
 #node references
-@onready var animation_player = $Visuals/mixamo_base/AnimationPlayer
-@onready var visuals = $Visuals
-@onready var navigation_agent_3d = $NavigationAgent3D
-
 @onready var rts_camera = $"../RTSCameraRig/Camera3D"
 @onready var champion_camera = $CameraRig/CameraSpring/Camera3D
-
-
 
 #configurable values
 @export var sensitivity_horizontal = 0.15
 @export var sensitivity_vertical = 0.08
-
-var SPEED = 4.2
-const JUMP_VELOCITY = 4.5
-
-
 
 #state and function variables
 var transition_camera: Camera3D
@@ -31,13 +20,10 @@ var navigation_interrupted = false
 
 
 
-# Get the gravity from the project settings to be synced with RigidBody nodes.
-var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
-
-
-
 func _enter_tree():
 	$MultiplayerSynchronizer.set_multiplayer_authority(str($"..".name).to_int())
+
+
 
 func _ready():
 	if !$MultiplayerSynchronizer.is_multiplayer_authority(): return
@@ -94,8 +80,6 @@ func _physics_process(delta):
 
 
 
-
-
 func champion_movement(delta):
 	var input_dir = Input.get_vector("left", "right", "forward", "backward")
 	var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
@@ -114,22 +98,7 @@ func champion_movement(delta):
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 		velocity.z = move_toward(velocity.z, 0, SPEED)
 
-func rts_movement(delta):
-	if navigation_agent_3d.is_navigation_finished():
-		velocity = Vector3(0,velocity.y,0) #dirty fix TODO
-		if animation_player.current_animation != "idle":
-			animation_player.play("idle")
-		return
-	
-	if animation_player.current_animation != "running":
-		animation_player.play("running")
-		
-	var target_position = navigation_agent_3d.get_next_path_position()
-	var direction = global_position.direction_to(target_position)
-	
-	velocity = direction * SPEED
-	
-	visuals.rotation.y = lerp_angle(visuals.rotation.y, atan2(-direction.x, -direction.z) - rotation.y, 12.0 * delta)
+
 
 func handle_action(action):
 	#for now this just handles walking to a target location. actions in the future will include clicking resource nodes, enemies, etc.
@@ -137,9 +106,11 @@ func handle_action(action):
 	navigation_interrupted = false
 
 
+
+#signal response functions
+
 func _on_action_raycast_hit(action):
 	handle_action(action)
-
 
 func _on_camera_transition():
 	if in_champion_view:
