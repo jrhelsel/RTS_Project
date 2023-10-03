@@ -12,6 +12,11 @@ var unit_id: int
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 
+
+
+func _enter_tree():
+	$MultiplayerSynchronizer.set_multiplayer_authority(str($"..".name).to_int())
+
 func _ready():
 	$"..".action_raycast_hit.connect(_on_action_raycast_hit)
 	
@@ -44,8 +49,10 @@ func rts_movement(delta):
 	
 	visuals.rotation.y = lerp_angle(visuals.rotation.y, atan2(-direction.x, -direction.z) - rotation.y, 12.0 * delta)
 
+#for now this just handles walking to a target location. actions in the future will include clicking resource nodes, enemies, etc.
 func handle_action(action):
-	#for now this just handles walking to a target location. actions in the future will include clicking resource nodes, enemies, etc.
+	if action.is_empty(): return
+	
 	navigation_agent_3d.set_target_position(action.position)
 
 func set_id(id):
