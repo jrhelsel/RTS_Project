@@ -4,7 +4,7 @@ extends Node3D
 
 @onready var champion_camera = $Champion/CameraRig/CameraSpring/Camera3D
 @onready var rts_camera = $RTSCameraRig/Camera3D
-var transition_camera
+var transition_camera: Camera3D
 
 var in_champion_view
 var in_rts_view
@@ -25,8 +25,6 @@ var control_group_6: String
 var control_group_7: String
 var control_group_8: String
 var control_group_9: String
-
-
 
 
 var next_unit_id: int = 1
@@ -73,7 +71,7 @@ func _ready():
 	$RTSCameraRig.position.z = lerp($RTSCameraRig.position.z, $Champion.position.z + 5, 1)
 
 
-func _input(event):
+func _input(_event):
 	if !$Champion/MultiplayerSynchronizer.is_multiplayer_authority(): return
 
 	#rts view inputs
@@ -90,7 +88,6 @@ func _input(event):
 		
 	if Input.is_action_just_pressed("spawn_unit"):
 		spawn_unit.rpc()
-
 
 
 
@@ -158,18 +155,15 @@ func _input(event):
 		print("")
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
+func _process(_delta):
 	if in_rts_view:
 		mouse_position  = get_viewport().get_mouse_position()
-		
 		if Input.is_action_just_pressed("left_mouse"):
 			box_selection_start_position = mouse_position
 			selection_box.start_position = box_selection_start_position
 			selection_box.is_visible = true
-		
 		if Input.is_action_pressed("left_mouse"):
 			selection_box.end_position = mouse_position
-		
 		if Input.is_action_just_released("left_mouse"):
 			selection_box.end_position = mouse_position
 			selection_box.is_visible = false
@@ -239,7 +233,6 @@ func transition():
 	target_camera.current = true
 	transitioning = false
 
-
 func action_raycast(collision_mask: int = DEFAULT_COLLISION_MASK):
 	#casts a ray from the appropriate perspective and returns it
 	var current_camera: Camera3D
@@ -288,7 +281,6 @@ func unit_selection(box_start, box_end):
 		print("box unit selection: ")
 	print(str(get_tree().get_nodes_in_group(selected_units_group)))
 
-
 func set_control_group(group):
 	for unit in get_tree().get_nodes_in_group(group):
 		unit.remove_from_group(group)
@@ -303,6 +295,8 @@ func select_control_group(group):
 	for unit in get_tree().get_nodes_in_group(group):
 		unit.add_to_group(selected_units_group)
 
+
+
 @rpc("any_peer", "call_local")
 func spawn_unit():
 	var new_unit = preload("res://scenes/unit.tscn").instantiate()
@@ -312,14 +306,14 @@ func spawn_unit():
 	new_unit.set_id(next_unit_id)
 	
 	next_unit_id += 1
-	unit_count += 1
-	
+	unit_count += 1	
 
-
+@rpc("any_peer", "call_local")
 func remove_unit(id):
 	for unit in get_tree().get_nodes_in_group(unit_group):
 		if unit.get_id == id:
 			unit.queue_free()
+
 
 func _on_fullscreen_toggle(fullscreen):
 	if in_rts_view:

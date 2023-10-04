@@ -71,3 +71,7 @@ func get_id():
 
 func _on_action_raycast_hit(action):
 	handle_action(action)
+
+
+func _on_navigation_agent_3d_velocity_computed(_safe_velocity):
+	pass # Replace with function body.

@@ -15,7 +15,7 @@ func _draw():
 		draw_line(end_position, Vector2(end_position.x, start_position.y), selection_box_color, selection_box_width)
 		draw_line(end_position, Vector2(start_position.x, end_position.y), selection_box_color, selection_box_width)
 
-func _process(delta):
+func _process(_delta):
 	queue_redraw()
 
 func set_selection_area():

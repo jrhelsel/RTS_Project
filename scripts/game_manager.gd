@@ -15,7 +15,7 @@ func _ready():
 
 
 
-func _input(event):
+func _input(_event):
 	if Input.is_action_just_pressed("toggle_fullscreen"):
 		fullscreen_toggled.emit(fullscreen)
 		if fullscreen:
@@ -27,5 +27,5 @@ func _input(event):
 
 
 
-func _process(delta):
+func _process(_delta):
 	pass
