@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://bsmf2qndn5i6a"]
+[gd_scene load_steps=3 format=3 uid="uid://bsmf2qndn5i6a"]
 
 [ext_resource type="Script" path="res://scripts/rts_camera.gd" id="1_l30r0"]
+[ext_resource type="PackedScene" uid="uid://ua17fbppb5x0" path="res://scenes/selection_box.tscn" id="2_oly8b"]
 
 [node name="RTSCameraRig" type="Node3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.99236)
@@ -10,3 +11,5 @@ script = ExtResource("1_l30r0")
 transform = Transform3D(1, 0, 0, 0, 0.573576, 0.819152, 0, -0.819152, 0.573576, 0, 6.53929, -0.322388)
 
 [node name="ToRTSTransitionCamera" type="Camera3D" parent="Camera3D"]
+
+[node name="SelectionBox" parent="Camera3D" instance=ExtResource("2_oly8b")]

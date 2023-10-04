@@ -1,0 +1,6 @@
+Collision masks:
+	
+	1: General
+	2: Terrain
+	3: Units
+	4: Resource nodes

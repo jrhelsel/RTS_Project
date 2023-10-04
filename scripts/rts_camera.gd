@@ -3,6 +3,8 @@ extends Node3D
 @export var pan_speed = 30.0
 
 var camera_start_position
+var selection_box: Rect2
+
 
 func _ready():
 	camera_start_position = $Camera3D.position
@@ -40,3 +42,4 @@ func _process(delta):
 
 func reset_zoom():
 	$Camera3D.position = camera_start_position
+

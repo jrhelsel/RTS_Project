@@ -7,9 +7,9 @@
 [node name="player" type="Node3D"]
 script = ExtResource("1_2av5e")
 
-[node name="champion" parent="." instance=ExtResource("1_hl5tm")]
+[node name="Champion" parent="." instance=ExtResource("1_hl5tm")]
 
 [node name="RTSCameraRig" parent="." instance=ExtResource("2_rp0jf")]
 
-[connection signal="action_raycast_hit" from="." to="champion" method="_on_action_raycast_hit"]
-[connection signal="camera_transition" from="." to="champion" method="_on_camera_transition"]
+[connection signal="action_raycast_hit" from="." to="Champion" method="_on_action_raycast_hit"]
+[connection signal="camera_transition" from="." to="Champion" method="_on_camera_transition"]

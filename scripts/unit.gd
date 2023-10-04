@@ -7,6 +7,9 @@ extends CharacterBody3D
 var SPEED = 4.2
 const JUMP_VELOCITY = 4.5
 
+var selected_units_group: String
+var unit_group: String
+
 var unit_id: int
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
@@ -20,6 +23,8 @@ func _enter_tree():
 func _ready():
 	$"..".action_raycast_hit.connect(_on_action_raycast_hit)
 	
+	selected_units_group = "selected_units" + $"..".name
+	unit_group = "units" + $"..".name
 	
 func _physics_process(delta):
 	
@@ -51,7 +56,7 @@ func rts_movement(delta):
 
 #for now this just handles walking to a target location. actions in the future will include clicking resource nodes, enemies, etc.
 func handle_action(action):
-	if action.is_empty(): return
+	if action.is_empty() or !is_in_group(selected_units_group): return
 	
 	navigation_agent_3d.set_target_position(action.position)
 

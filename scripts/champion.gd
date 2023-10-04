@@ -18,12 +18,16 @@ var in_rts_view
 var transitioning = false
 var navigation_interrupted = false
 
-
 func _ready():
 	if !$MultiplayerSynchronizer.is_multiplayer_authority(): return
 
-	unit_id = 0
+	selected_units_group = "selected_units" + $"..".name
+	unit_group = "units" + $"..".name
 
+	add_to_group(unit_group)
+	add_to_group(selected_units_group)
+	unit_id = 0
+	
 	in_champion_view = false
 	in_rts_view = true
 	rts_camera.current = true
@@ -98,7 +102,7 @@ func champion_movement(delta):
 #for now this just handles walking to a target location. actions in the future will include clicking resource nodes, enemies, etc.
 func handle_action(action):
 	#print(str(action))
-	if action.is_empty(): return
+	if action.is_empty() or !is_in_group(selected_units_group): return
 	
 	if !Input.get_vector("left", "right", "forward", "backward"):	
 		navigation_agent_3d.set_target_position(action.position)

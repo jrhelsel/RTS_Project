@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://ua17fbppb5x0"]
 
-[ext_resource type="Script" path="res://scenes/selection_box.gd" id="1_2h4br"]
+[ext_resource type="Script" path="res://scripts/selection_box.gd" id="1_gp48o"]
 
 [node name="selection_box" type="Control"]
 layout_mode = 3
@@ -9,4 +9,4 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_2h4br")
+script = ExtResource("1_gp48o")
