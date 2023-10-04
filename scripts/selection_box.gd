@@ -28,13 +28,3 @@ func set_selection_area():
 		start_position.y = end_position.y
 		end_position.y = temp
 	selection_area = Rect2(start_position, end_position - start_position)
-
-
-func set_start_position(start):
-	start_position = start
-	
-func set_end_position(end):
-	end_position = end
-	
-func set_visibility(visibility):
-	is_visible = visibility

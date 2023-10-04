@@ -46,8 +46,13 @@ const UNIT_COLLISION_MASK = 0x4
 
 func _ready():
 	in_rts_view = true
-	$RTSCameraRig.position.x = lerp($RTSCameraRig.position.x, $Champion.position.x, 1)
-	$RTSCameraRig.position.z = lerp($RTSCameraRig.position.z, $Champion.position.z + 5, 1)
+
+	GameManager.fullscreen_toggled.connect(_on_fullscreen_toggle)
+	if GameManager.fullscreen:
+		Input.mouse_mode = Input.MOUSE_MODE_CONFINED
+	else:
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	
 	
 	selected_units_group = "selected_units" + name
 	unit_group = "units" + name
@@ -62,6 +67,10 @@ func _ready():
 	control_group_8 = "cg8" + name
 	control_group_9 = "cg9" + name
 
+
+
+	$RTSCameraRig.position.x = lerp($RTSCameraRig.position.x, $Champion.position.x, 1)
+	$RTSCameraRig.position.z = lerp($RTSCameraRig.position.z, $Champion.position.z + 5, 1)
 
 
 func _input(event):
@@ -81,7 +90,10 @@ func _input(event):
 		
 	if Input.is_action_just_pressed("spawn_unit"):
 		spawn_unit.rpc()
-		
+
+
+
+
 	#control groups
 	if Input.is_action_just_pressed("control_group_1"):
 		if Input.is_action_pressed("left_control"):
@@ -137,7 +149,8 @@ func _input(event):
 		else:
 			select_control_group(control_group_9)
 
-			
+
+
 	if Input.is_action_just_pressed("print_debug_message"):
 		print("Unit group: " + unit_group)
 		print("Unit count: " + str(unit_count))
@@ -151,15 +164,15 @@ func _process(delta):
 		
 		if Input.is_action_just_pressed("left_mouse"):
 			box_selection_start_position = mouse_position
-			selection_box.set_start_position(box_selection_start_position)
-			selection_box.set_visibility(true)
+			selection_box.start_position = box_selection_start_position
+			selection_box.is_visible = true
 		
 		if Input.is_action_pressed("left_mouse"):
-			selection_box.set_end_position(mouse_position)
+			selection_box.end_position = mouse_position
 		
 		if Input.is_action_just_released("left_mouse"):
-			selection_box.set_end_position(mouse_position)
-			selection_box.set_visibility(false)
+			selection_box.end_position = mouse_position
+			selection_box.is_visible = false
 			unit_selection(box_selection_start_position, mouse_position)
 		
 		
@@ -186,7 +199,11 @@ func transition():
 	var rts_camera_transform_rel_to_player = $RTSCameraRig.transform * rts_camera.transform
 	
 	if in_champion_view: #going from champion view to rts view
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		if GameManager.fullscreen:
+			Input.mouse_mode = Input.MOUSE_MODE_CONFINED
+		else:
+			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+			
 		in_champion_view = false
 		in_rts_view = true
 		
@@ -290,7 +307,7 @@ func select_control_group(group):
 func spawn_unit():
 	var new_unit = preload("res://scenes/unit.tscn").instantiate()
 	add_child(new_unit)
-	new_unit.position = position + Vector3(2, 1, 2)
+	new_unit.position = position + Vector3(0, 1, next_unit_id)
 	new_unit.add_to_group(unit_group)
 	new_unit.set_id(next_unit_id)
 	
@@ -303,3 +320,10 @@ func remove_unit(id):
 	for unit in get_tree().get_nodes_in_group(unit_group):
 		if unit.get_id == id:
 			unit.queue_free()
+
+func _on_fullscreen_toggle(fullscreen):
+	if in_rts_view:
+		if fullscreen:
+			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		else:
+			Input.mouse_mode = Input.MOUSE_MODE_CONFINED
