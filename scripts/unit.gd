@@ -5,7 +5,6 @@ extends CharacterBody3D
 @onready var navigation_agent_3d = $NavigationAgent3D
 
 var SPEED = 4.2
-const JUMP_VELOCITY = 4.5
 
 var selected_units_group: String
 var unit_group: String
@@ -15,7 +14,6 @@ var sync_rotation
 
 var unit_id: int
 
-# Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 
@@ -24,14 +22,19 @@ func _enter_tree():
 	$MultiplayerSynchronizer.set_multiplayer_authority(str($"..".name).to_int())
 
 func _ready():
-	$"..".action_raycast_hit.connect(_on_action_raycast_hit)
-	
-	sync_position = global_position
-	sync_rotation = global_rotation.y
+	if $MultiplayerSynchronizer.is_multiplayer_authority():
 		
-	selected_units_group = "selected_units" + $"..".name
-	unit_group = "units" + $"..".name
-	
+		$"..".action_raycast_hit.connect(_on_action_raycast_hit)
+		
+		selected_units_group = "selected_units" + $"..".name
+		unit_group = "units" + $"..".name
+		
+	else:
+		
+		sync_position = global_position
+		sync_rotation = global_rotation.y
+		
+
 func _physics_process(delta):
 	if $MultiplayerSynchronizer.is_multiplayer_authority():
 	
@@ -63,7 +66,7 @@ func rts_movement(delta):
 	var target_position = navigation_agent_3d.get_next_path_position()
 	var direction = global_position.direction_to(target_position)
 	
-	velocity = direction * SPEED
+	velocity = velocity.move_toward(direction * SPEED, .5)
 	
 	visuals.rotation.y = lerp_angle(visuals.rotation.y, atan2(-direction.x, -direction.z) - rotation.y, 12.0 * delta)
 

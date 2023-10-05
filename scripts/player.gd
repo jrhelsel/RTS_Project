@@ -6,6 +6,8 @@ extends Node3D
 @onready var rts_camera = $RTSCameraRig/Camera3D
 var transition_camera: Camera3D
 
+@onready var crosshair = $Champion/CameraRig/CameraSpring/Camera3D/user_interface/Crosshair
+
 var in_champion_view
 var in_rts_view
 
@@ -51,6 +53,7 @@ func _ready():
 	else:
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	
+	crosshair.visible = false
 	
 	selected_units_group = "selected_units" + name
 	unit_group = "units" + name
@@ -201,6 +204,8 @@ func transition():
 		in_champion_view = false
 		in_rts_view = true
 		
+		crosshair.visible = false
+		
 		target_camera = rts_camera
 		transition_camera = $RTSCameraRig/Camera3D/ToRTSTransitionCamera
 		
@@ -209,8 +214,11 @@ func transition():
 		
 	else: #going from rts view to champion view
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		
 		in_champion_view = true
 		in_rts_view = false
+		
+		crosshair.visible = true
 		
 		target_camera = champion_camera
 		transition_camera = $Champion/CameraRig/CameraSpring/Camera3D/ToChampionTransitionCamera
@@ -242,7 +250,7 @@ func action_raycast(collision_mask: int = DEFAULT_COLLISION_MASK):
 		current_camera = transition_camera
 	elif in_champion_view:
 		current_camera = champion_camera
-		cast_position = get_viewport().content_scale_size / 2
+		cast_position = crosshair.position
 	else:
 		current_camera = rts_camera
 	

@@ -63,6 +63,23 @@ offset_right = 180.0
 offset_bottom = 148.0
 text = "IP Address:"
 
+[node name="LoadScene1" type="Button" parent="."]
+layout_mode = 0
+offset_left = 831.0
+offset_top = 69.0
+offset_right = 1065.0
+offset_bottom = 126.0
+text = "Load Main Test Scene"
+
+[node name="LoadScene2" type="Button" parent="."]
+offset_left = 831.0
+offset_top = 140.0
+offset_right = 1066.0
+offset_bottom = 197.0
+text = "Load Navigation Test Scene"
+
 [connection signal="button_down" from="Host" to="." method="_on_host_button_down"]
 [connection signal="button_down" from="Join" to="." method="_on_join_button_down"]
 [connection signal="button_down" from="StartGame" to="." method="_on_start_game_button_down"]
+[connection signal="button_down" from="LoadScene1" to="." method="_on_load_scene_1_button_down"]
+[connection signal="button_down" from="LoadScene2" to="." method="_on_load_scene_2_button_down"]

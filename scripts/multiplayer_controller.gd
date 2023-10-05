@@ -4,7 +4,7 @@ extends Control
 @export var port = 1118
 
 var peer
-
+var scene_name: String = "res://scenes/TestScene.tscn"
 var compression = ENetConnection.COMPRESS_RANGE_CODER
 
 # Called when the node enters the scene tree for the first time.
@@ -53,7 +53,7 @@ func send_player_information(name, id):
 
 @rpc("any_peer","call_local")
 func start_game():
-	var scene = preload("res://scenes/TestScene.tscn").instantiate()
+	var scene = load(scene_name).instantiate()
 	get_tree().root.add_child(scene)
 	self.hide()
 
@@ -85,4 +85,13 @@ func _on_join_button_down():
 
 func _on_start_game_button_down():
 	start_game.rpc()
+
+
+func _on_load_scene_1_button_down():
+	scene_name = "res://scenes/TestScene.tscn"
+	
+func _on_load_scene_2_button_down():
+	scene_name = "res://scenes/navigation_test.tscn"
+
+
 
