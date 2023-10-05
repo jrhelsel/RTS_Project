@@ -4,6 +4,9 @@ extends CharacterBody3D
 @onready var visuals = $Visuals
 @onready var navigation_agent_3d = $NavigationAgent3D
 
+@onready var outline_shader_surface = $Visuals/mixamo_base/Armature/Skeleton3D/Beta_Surface.get_active_material(0).next_pass
+@onready var outline_shader_joints = $Visuals/mixamo_base/Armature/Skeleton3D/Beta_Joints.get_active_material(0).next_pass
+
 var SPEED = 4.2
 
 var selected_units_group: String
@@ -25,6 +28,7 @@ func _ready():
 	if $MultiplayerSynchronizer.is_multiplayer_authority():
 		
 		$"..".action_raycast_hit.connect(_on_action_raycast_hit)
+		$"..".selected_units_updated.connect(_on_selected_units_updated)
 		
 		selected_units_group = "selected_units" + $"..".name
 		unit_group = "units" + $"..".name
@@ -33,7 +37,6 @@ func _ready():
 		
 		sync_position = global_position
 		sync_rotation = global_rotation.y
-		
 
 func _physics_process(delta):
 	if $MultiplayerSynchronizer.is_multiplayer_authority():
@@ -88,6 +91,15 @@ func get_id():
 func _on_action_raycast_hit(action):
 	handle_action(action)
 
+func _on_selected_units_updated():
+	if is_in_group(selected_units_group): 
+		outline_shader_surface.set_shader_parameter("outline_enabled", true)
+		outline_shader_joints.set_shader_parameter("outline_enabled", true)
+		print("unit oultines ON")
+	else:
+		outline_shader_surface.set_shader_parameter("outline_enabled", false)
+		outline_shader_joints.set_shader_parameter("outline_enabled", false)
+		print("unit oultines OFF")
 
 func _on_navigation_agent_3d_velocity_computed(_safe_velocity):
 	pass # Replace with function body.

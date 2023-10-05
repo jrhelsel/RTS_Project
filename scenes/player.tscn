@@ -13,3 +13,4 @@ script = ExtResource("1_2av5e")
 
 [connection signal="action_raycast_hit" from="." to="Champion" method="_on_action_raycast_hit"]
 [connection signal="camera_transition" from="." to="Champion" method="_on_camera_transition"]
+[connection signal="selected_units_updated" from="." to="Champion" method="_on_selected_units_updated"]

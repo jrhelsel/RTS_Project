@@ -37,6 +37,7 @@ var mouse_position: Vector2
 
 signal action_raycast_hit
 signal camera_transition
+signal selected_units_updated
 
 const DEFAULT_COLLISION_MASK = 0xFFFFFFFF
 const TERRAIN_COLLISION_MASK = 0x2
@@ -100,54 +101,63 @@ func _input(_event):
 			set_control_group(control_group_1)
 		else:
 			select_control_group(control_group_1)
+			selected_units_updated.emit()
 
 	if Input.is_action_just_pressed("control_group_2"):
 		if Input.is_action_pressed("left_control"):
 			set_control_group(control_group_2)
 		else:
 			select_control_group(control_group_2)
+			selected_units_updated.emit()
 			
 	if Input.is_action_just_pressed("control_group_3"):
 		if Input.is_action_pressed("left_control"):
 			set_control_group(control_group_3)
 		else:
 			select_control_group(control_group_3)
+			selected_units_updated.emit()
 			
 	if Input.is_action_just_pressed("control_group_4"):
 		if Input.is_action_pressed("left_control"):
 			set_control_group(control_group_4)
 		else:
 			select_control_group(control_group_4)
+			selected_units_updated.emit()
 			
 	if Input.is_action_just_pressed("control_group_5"):
 		if Input.is_action_pressed("left_control"):
 			set_control_group(control_group_5)
 		else:
 			select_control_group(control_group_5)
+			selected_units_updated.emit()
 			
 	if Input.is_action_just_pressed("control_group_6"):
 		if Input.is_action_pressed("left_control"):
 			set_control_group(control_group_6)
 		else:
 			select_control_group(control_group_6)
+			selected_units_updated.emit()
 			
 	if Input.is_action_just_pressed("control_group_7"):
 		if Input.is_action_pressed("left_control"):
 			set_control_group(control_group_7)
 		else:
 			select_control_group(control_group_7)
+			selected_units_updated.emit()
 			
 	if Input.is_action_just_pressed("control_group_8"):
 		if Input.is_action_pressed("left_control"):
 			set_control_group(control_group_8)
 		else:
 			select_control_group(control_group_8)
+			selected_units_updated.emit()
 			
 	if Input.is_action_just_pressed("control_group_9"):
 		if Input.is_action_pressed("left_control"):
 			set_control_group(control_group_9)
 		else:
 			select_control_group(control_group_9)
+			selected_units_updated.emit()
 
 
 
@@ -171,7 +181,7 @@ func _process(_delta):
 			selection_box.end_position = mouse_position
 			selection_box.is_visible = false
 			unit_selection(box_selection_start_position, mouse_position)
-		
+			selected_units_updated.emit()
 		
 		if Input.is_action_pressed("focus_champion"):
 			if Input.is_action_just_pressed("focus_champion"):

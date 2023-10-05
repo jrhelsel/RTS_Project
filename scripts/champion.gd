@@ -133,4 +133,3 @@ func _on_camera_transition():
 		
 	if navigation_interrupted:
 		velocity = Vector3(0,velocity.y,0)
-	
