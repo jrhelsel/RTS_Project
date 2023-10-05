@@ -73,6 +73,9 @@ func _on_host_button_down():
 
 
 func _on_join_button_down():
+	if !($Address.text == ""):
+		address = $Address.text
+		
 	peer = ENetMultiplayerPeer.new()
 	peer.create_client(address, port)
 	peer.get_host().compress(compression)
