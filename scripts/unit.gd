@@ -10,6 +10,9 @@ const JUMP_VELOCITY = 4.5
 var selected_units_group: String
 var unit_group: String
 
+var sync_position: Vector3
+var sync_rotation
+
 var unit_id: int
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
@@ -23,19 +26,29 @@ func _enter_tree():
 func _ready():
 	$"..".action_raycast_hit.connect(_on_action_raycast_hit)
 	
+	sync_position = global_position
+	sync_rotation = global_rotation.y
+		
 	selected_units_group = "selected_units" + $"..".name
 	unit_group = "units" + $"..".name
 	
 func _physics_process(delta):
+	if $MultiplayerSynchronizer.is_multiplayer_authority():
 	
-	rts_movement(delta)
-	
-	# Add the gravity.
-	if not is_on_floor():
-		velocity.y -= gravity * delta
-	
-	move_and_slide()
-
+		rts_movement(delta)
+		
+		# Add the gravity.
+		if not is_on_floor():
+			velocity.y -= gravity * delta
+		
+		sync_position = global_position
+		sync_rotation = global_rotation.y
+		
+		move_and_slide()
+		
+	else:
+		global_position = global_position.lerp(sync_position, .5)
+		global_rotation.y = lerp_angle(global_rotation.y, sync_rotation, .5)
 
 func rts_movement(delta):
 	if navigation_agent_3d.is_navigation_finished():
