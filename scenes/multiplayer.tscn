@@ -51,12 +51,14 @@ offset_bottom = 105.0
 text = "Name:"
 
 [node name="Address" type="LineEdit" parent="."]
+layout_mode = 0
 offset_left = 187.0
 offset_top = 119.0
 offset_right = 614.0
 offset_bottom = 150.0
 
 [node name="Label2" type="Label" parent="."]
+layout_mode = 0
 offset_left = 94.0
 offset_top = 122.0
 offset_right = 180.0
@@ -72,6 +74,7 @@ offset_bottom = 126.0
 text = "Load Main Test Scene"
 
 [node name="LoadScene2" type="Button" parent="."]
+layout_mode = 0
 offset_left = 831.0
 offset_top = 140.0
 offset_right = 1066.0

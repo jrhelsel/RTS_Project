@@ -2,7 +2,8 @@ extends CharacterBody3D
 
 @onready var animation_player = $Visuals/mixamo_base/AnimationPlayer
 @onready var visuals = $Visuals
-@onready var navigation_agent_3d = $NavigationAgent3D
+@onready var navigation_agent_3d = $NavigationPathFollower/NavigationAgent3D
+@onready var nav_path_follower = $NavigationPathFollower
 
 @onready var outline_shader_surface = $Visuals/mixamo_base/Armature/Skeleton3D/Beta_Surface.get_active_material(0).next_pass
 @onready var outline_shader_joints = $Visuals/mixamo_base/Armature/Skeleton3D/Beta_Joints.get_active_material(0).next_pass
@@ -58,7 +59,7 @@ func _physics_process(delta):
 
 func rts_movement(delta):
 	if navigation_agent_3d.is_navigation_finished():
-		velocity = Vector3(0,velocity.y,0) #dirty fix TODO
+		velocity = Vector3(0,velocity.y,0)
 		if animation_player.current_animation != "idle":
 			animation_player.play("idle")
 		return
@@ -67,11 +68,13 @@ func rts_movement(delta):
 		animation_player.play("running")
 		
 	var target_position = navigation_agent_3d.get_next_path_position()
-	var direction = global_position.direction_to(target_position)
+	var target_direction = global_position.direction_to(target_position)
+	var unit_direction = Vector3(target_direction.x, 0, target_direction.z).normalized()
+
+	nav_path_follower.global_position.y = target_position.y
+	velocity = unit_direction * SPEED
 	
-	velocity = velocity.move_toward(direction * SPEED, .5)
-	
-	visuals.rotation.y = lerp_angle(visuals.rotation.y, atan2(-direction.x, -direction.z) - rotation.y, 12.0 * delta)
+	visuals.rotation.y = lerp_angle(visuals.rotation.y, atan2(-unit_direction.x, -unit_direction.z) - rotation.y, 12.0 * delta)
 
 #for now this just handles walking to a target location. actions in the future will include clicking resource nodes, enemies, etc.
 func handle_action(action):
@@ -101,5 +104,3 @@ func _on_selected_units_updated():
 		outline_shader_joints.set_shader_parameter("outline_enabled", false)
 		print("unit oultines OFF")
 
-func _on_navigation_agent_3d_velocity_computed(_safe_velocity):
-	pass # Replace with function body.

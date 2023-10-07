@@ -2,7 +2,7 @@ extends Node3D
 
 var cell_count: int = 0
 
-var cell_spacing: float
+var cell_spacing: float =  1.0
 
 var lead_cell: cell
 var cells: Array[cell]
@@ -21,10 +21,10 @@ func update_selected_units():
 	for unit in get_tree().get_nodes_in_group($"..".selected_units_group):
 		cells.append(cell.new())
 		cells[cell_count].unit = unit
-		print("adding " + str(unit) + " to nav array")
+		#print("adding " + str(unit) + " to nav array")
 		cell_count += 1
 	lead_cell = cells[0]
-	print(str(cell_count) + " total units")
+	#print(str(cell_count) + " total units")
 	global_position = lead_cell.unit.global_position
 	
 	build_formation(Formation.RECTANGLE)
@@ -45,7 +45,7 @@ func build_formation(formation: Formation):
 				grid_pointer.x = entry_index % rect_width
 				grid_pointer.y = entry_index / rect_width
 				
-				entry.formation_position = grid_pointer
+				entry.formation_position = grid_pointer * cell_spacing
 				
 				#top row
 				if grid_pointer.y == 0:
@@ -124,6 +124,13 @@ func build_formation(formation: Formation):
 							entry.down = cells[neighbor_position]
 					
 				entry_index+= 1
+
+func set_unit_target_position():
+	for entry in cells:
+		var cell_position = Vector3(entry.formation_position.x, 0, entry.formation_position.y)
+		pass
+	pass
+
 class cell:
 	var unit
 	var formation_position: Vector2

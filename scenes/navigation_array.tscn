@@ -4,3 +4,5 @@
 
 [node name="navigation_array" type="Node3D"]
 script = ExtResource("1_tnmdv")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]

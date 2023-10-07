@@ -92,6 +92,7 @@ func _input(_event):
 		action_raycast_hit.emit(action)
 		if !get_tree().get_nodes_in_group(selected_units_group).is_empty():
 			create_navigation_array() #implement some logic to only make a new array if the previous array has 
+
 	
 	if Input.is_action_just_pressed("toggle_camera"):
 		transition()
