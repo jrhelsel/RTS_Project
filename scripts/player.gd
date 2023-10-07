@@ -18,6 +18,10 @@ var navigation_interrupted = false
 var selected_units_group: String
 var unit_group: String
 
+const navigation_array = preload("res://scripts/navigation_array.gd")
+#temp
+var nav_array
+
 var control_group_1: String
 var control_group_2: String
 var control_group_3: String
@@ -86,6 +90,8 @@ func _input(_event):
 	if Input.is_action_just_pressed("right_mouse"):
 		var action = action_raycast()
 		action_raycast_hit.emit(action)
+		if !get_tree().get_nodes_in_group(selected_units_group).is_empty():
+			create_navigation_array() #implement some logic to only make a new array if the previous array has 
 	
 	if Input.is_action_just_pressed("toggle_camera"):
 		transition()
@@ -313,7 +319,10 @@ func select_control_group(group):
 	for unit in get_tree().get_nodes_in_group(group):
 		unit.add_to_group(selected_units_group)
 
-
+func create_navigation_array():
+	nav_array = navigation_array.new()
+	add_child(nav_array)
+	nav_array.update_selected_units()
 
 @rpc("any_peer", "call_local")
 func spawn_unit():
@@ -331,7 +340,6 @@ func remove_unit(id):
 	for unit in get_tree().get_nodes_in_group(unit_group):
 		if unit.get_id == id:
 			unit.queue_free()
-
 
 func _on_fullscreen_toggle(fullscreen):
 	if in_rts_view:

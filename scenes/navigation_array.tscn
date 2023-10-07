@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bg2wl1dq21osq"]
+
+[ext_resource type="Script" path="res://scripts/navigation_array.gd" id="1_tnmdv"]
+
+[node name="navigation_array" type="Node3D"]
+script = ExtResource("1_tnmdv")

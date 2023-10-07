@@ -1,0 +1,22 @@
+[gd_scene load_steps=2 format=3 uid="uid://btstm7dck06hr"]
+
+[sub_resource type="GDScript" id="GDScript_cko0p"]
+script/source = "extends Node3D
+
+var size: float
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	pass
+"
+
+[node name="navigation_cell" type="Node3D"]
+script = SubResource("GDScript_cko0p")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
