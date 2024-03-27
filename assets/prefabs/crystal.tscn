@@ -1,0 +1,30 @@
+[gd_scene load_steps=5 format=3 uid="uid://dulrsxpi32slt"]
+
+[ext_resource type="PackedScene" uid="uid://o6wp1daiwm58" path="res://assets/models/crystal.gltf" id="1_ov0hs"]
+[ext_resource type="Shader" path="res://assets/shaders/crystal.gdshader" id="2_jubhw"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2su2p"]
+render_priority = 0
+shader = ExtResource("2_jubhw")
+shader_parameter/metallic = 0.2
+shader_parameter/roughness = 0.05
+shader_parameter/emission_intensity = 0.2
+shader_parameter/fresnel_scale = 1.0
+shader_parameter/alpha = 0.0
+shader_parameter/base_color = Color(0.372549, 0.713726, 0.941176, 1)
+shader_parameter/top_color = Color(0.372549, 0.713726, 0.941176, 1)
+shader_parameter/bottom_color = Color(0.372549, 0.713726, 0.941176, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_4msn8"]
+size = Vector3(2.26343, 3.19128, 2.92636)
+
+[node name="crystal" instance=ExtResource("1_ov0hs")]
+
+[node name="crystal" parent="." index="0"]
+surface_material_override/0 = SubResource("ShaderMaterial_2su2p")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="crystal" index="0"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="crystal/StaticBody3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0814209, 1.87033, 0.0311432)
+shape = SubResource("BoxShape3D_4msn8")

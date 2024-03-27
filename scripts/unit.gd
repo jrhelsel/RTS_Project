@@ -2,7 +2,7 @@ extends CharacterBody3D
 
 @onready var animation_player = $Visuals/mixamo_base/AnimationPlayer
 @onready var visuals = $Visuals
-@onready var navigation_agent_3d = $NavigationPathFollower/NavigationAgent3D
+@onready var navigation_agent = $NavigationPathFollower/NavigationAgent3D
 @onready var nav_path_follower = $NavigationPathFollower
 
 @onready var outline_shader_surface = $Visuals/mixamo_base/Armature/Skeleton3D/Beta_Surface.get_active_material(0).next_pass
@@ -58,7 +58,7 @@ func _physics_process(delta):
 		global_rotation.y = lerp_angle(global_rotation.y, sync_rotation, .5)
 
 func rts_movement(delta):
-	if navigation_agent_3d.is_navigation_finished():
+	if navigation_agent.is_navigation_finished():
 		velocity = Vector3(0,velocity.y,0)
 		if animation_player.current_animation != "idle":
 			animation_player.play("idle")
@@ -67,12 +67,16 @@ func rts_movement(delta):
 	if animation_player.current_animation != "running":
 		animation_player.play("running")
 		
-	var target_position = navigation_agent_3d.get_next_path_position()
+	var target_position = navigation_agent.get_next_path_position()
 	var target_direction = global_position.direction_to(target_position)
 	var unit_direction = Vector3(target_direction.x, 0, target_direction.z).normalized()
-
+	
+	var new_velocity = Vector3(unit_direction.x * SPEED, velocity.y, unit_direction.z * SPEED)
 	nav_path_follower.global_position.y = target_position.y
-	velocity = unit_direction * SPEED
+	#velocity.x = unit_direction.x * SPEED
+	#velocity.z = unit_direction.z * SPEED
+	
+	navigation_agent.set_velocity(new_velocity)
 	
 	visuals.rotation.y = lerp_angle(visuals.rotation.y, atan2(-unit_direction.x, -unit_direction.z) - rotation.y, 12.0 * delta)
 
@@ -80,7 +84,7 @@ func rts_movement(delta):
 func handle_action(action):
 	if action.is_empty() or !is_in_group(selected_units_group): return
 	
-	navigation_agent_3d.set_target_position(action.position)
+	#navigation_agent.set_target_position(action.position)
 
 func set_id(id):
 	unit_id = id
@@ -98,9 +102,15 @@ func _on_selected_units_updated():
 	if is_in_group(selected_units_group): 
 		outline_shader_surface.set_shader_parameter("outline_enabled", true)
 		outline_shader_joints.set_shader_parameter("outline_enabled", true)
-		print("unit oultines ON")
+		#print("unit oultines ON")
 	else:
 		outline_shader_surface.set_shader_parameter("outline_enabled", false)
 		outline_shader_joints.set_shader_parameter("outline_enabled", false)
-		print("unit oultines OFF")
+		#print("unit oultines OFF")
+
+
+
+func _on_navigation_agent_3d_velocity_computed(safe_velocity):
+	velocity.x = safe_velocity.x
+	velocity.z = safe_velocity.z
 

@@ -36,7 +36,7 @@ var control_group_9: String
 var next_unit_id: int = 1
 var unit_count: int = 1
 
-var box_selection_start_position: Vector2
+var selection_box_start_position: Vector2
 var mouse_position: Vector2
 
 signal action_raycast_hit
@@ -90,16 +90,12 @@ func _input(_event):
 	if Input.is_action_just_pressed("right_mouse"):
 		var action = action_raycast()
 		action_raycast_hit.emit(action)
-		if !get_tree().get_nodes_in_group(selected_units_group).is_empty():
-			create_navigation_array() #implement some logic to only make a new array if the previous array has 
 
-	
 	if Input.is_action_just_pressed("toggle_camera"):
 		transition()
 		
 	if Input.is_action_just_pressed("spawn_unit"):
 		spawn_unit.rpc()
-
 
 
 	#control groups
@@ -109,6 +105,8 @@ func _input(_event):
 		else:
 			select_control_group(control_group_1)
 			selected_units_updated.emit()
+			if !get_tree().get_nodes_in_group(selected_units_group).is_empty():
+				create_navigation_array() #implement some logic to only make a new array if the previous array has
 
 	if Input.is_action_just_pressed("control_group_2"):
 		if Input.is_action_pressed("left_control"):
@@ -116,6 +114,8 @@ func _input(_event):
 		else:
 			select_control_group(control_group_2)
 			selected_units_updated.emit()
+			if !get_tree().get_nodes_in_group(selected_units_group).is_empty():
+				create_navigation_array() #implement some logic to only make a new array if the previous array has
 			
 	if Input.is_action_just_pressed("control_group_3"):
 		if Input.is_action_pressed("left_control"):
@@ -123,6 +123,8 @@ func _input(_event):
 		else:
 			select_control_group(control_group_3)
 			selected_units_updated.emit()
+			if !get_tree().get_nodes_in_group(selected_units_group).is_empty():
+				create_navigation_array() #implement some logic to only make a new array if the previous array has
 			
 	if Input.is_action_just_pressed("control_group_4"):
 		if Input.is_action_pressed("left_control"):
@@ -130,6 +132,8 @@ func _input(_event):
 		else:
 			select_control_group(control_group_4)
 			selected_units_updated.emit()
+			if !get_tree().get_nodes_in_group(selected_units_group).is_empty():
+				create_navigation_array() #implement some logic to only make a new array if the previous array has
 			
 	if Input.is_action_just_pressed("control_group_5"):
 		if Input.is_action_pressed("left_control"):
@@ -137,6 +141,8 @@ func _input(_event):
 		else:
 			select_control_group(control_group_5)
 			selected_units_updated.emit()
+			if !get_tree().get_nodes_in_group(selected_units_group).is_empty():
+				create_navigation_array() #implement some logic to only make a new array if the previous array has
 			
 	if Input.is_action_just_pressed("control_group_6"):
 		if Input.is_action_pressed("left_control"):
@@ -144,6 +150,8 @@ func _input(_event):
 		else:
 			select_control_group(control_group_6)
 			selected_units_updated.emit()
+			if !get_tree().get_nodes_in_group(selected_units_group).is_empty():
+				create_navigation_array() #implement some logic to only make a new array if the previous array has
 			
 	if Input.is_action_just_pressed("control_group_7"):
 		if Input.is_action_pressed("left_control"):
@@ -151,6 +159,8 @@ func _input(_event):
 		else:
 			select_control_group(control_group_7)
 			selected_units_updated.emit()
+			if !get_tree().get_nodes_in_group(selected_units_group).is_empty():
+				create_navigation_array() #implement some logic to only make a new array if the previous array has
 			
 	if Input.is_action_just_pressed("control_group_8"):
 		if Input.is_action_pressed("left_control"):
@@ -158,6 +168,8 @@ func _input(_event):
 		else:
 			select_control_group(control_group_8)
 			selected_units_updated.emit()
+			if !get_tree().get_nodes_in_group(selected_units_group).is_empty():
+				create_navigation_array() #implement some logic to only make a new array if the previous array has
 			
 	if Input.is_action_just_pressed("control_group_9"):
 		if Input.is_action_pressed("left_control"):
@@ -165,6 +177,8 @@ func _input(_event):
 		else:
 			select_control_group(control_group_9)
 			selected_units_updated.emit()
+			if !get_tree().get_nodes_in_group(selected_units_group).is_empty():
+				create_navigation_array() #implement some logic to only make a new array if the previous array has
 
 
 
@@ -179,20 +193,22 @@ func _process(_delta):
 	if in_rts_view:
 		mouse_position  = get_viewport().get_mouse_position()
 		if Input.is_action_just_pressed("left_mouse"):
-			box_selection_start_position = mouse_position
-			selection_box.start_position = box_selection_start_position
+			selection_box_start_position = mouse_position
+			selection_box.start_position = selection_box_start_position
 			selection_box.is_visible = true
 		if Input.is_action_pressed("left_mouse"):
 			selection_box.end_position = mouse_position
 		if Input.is_action_just_released("left_mouse"):
 			selection_box.end_position = mouse_position
 			selection_box.is_visible = false
-			unit_selection(box_selection_start_position, mouse_position)
+			unit_selection(selection_box_start_position, mouse_position)
 			selected_units_updated.emit()
+			
+			if !get_tree().get_nodes_in_group(selected_units_group).is_empty():
+				create_navigation_array() #implement some logic to only make a new array if the previous array has
 		
 		if Input.is_action_pressed("focus_champion"):
-			if Input.is_action_just_pressed("focus_champion"):
-				$RTSCameraRig.reset_zoom()
+			#if Input.is_action_just_pressed("focus_champion"): $RTSCameraRig.reset_zoom()
 			$RTSCameraRig.position.x = lerp($RTSCameraRig.position.x, $Champion.position.x, 1)
 			$RTSCameraRig.position.z = lerp($RTSCameraRig.position.z, $Champion.position.z + 5, 1)
 
@@ -295,7 +311,7 @@ func unit_selection(box_start, box_end):
 		if !selection.is_empty():
 			selection.get("collider").add_to_group(selected_units_group)
 		
-		print("single unit selection: ")
+		#print("single unit selection: ")
 
 	else:
 		selection_box.set_selection_area()
@@ -303,8 +319,8 @@ func unit_selection(box_start, box_end):
 			if selection_box.selection_area.has_point(rts_camera.unproject_position(unit.global_transform.origin)):
 				unit.add_to_group(selected_units_group)
 		
-		print("box unit selection: ")
-	print(str(get_tree().get_nodes_in_group(selected_units_group)))
+		#print("box unit selection: ")
+	#print(str(get_tree().get_nodes_in_group(selected_units_group)))
 
 func set_control_group(group):
 	for unit in get_tree().get_nodes_in_group(group):
@@ -321,9 +337,9 @@ func select_control_group(group):
 		unit.add_to_group(selected_units_group)
 
 func create_navigation_array():
-	nav_array = navigation_array.new()
+	nav_array = preload("res://scenes/navigation_array.tscn").instantiate()
 	add_child(nav_array)
-	nav_array.update_selected_units()
+	nav_array.add_selected_units()
 
 @rpc("any_peer", "call_local")
 func spawn_unit():

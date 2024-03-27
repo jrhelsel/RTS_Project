@@ -1,8 +1,11 @@
 extends Node3D
 
+@onready var navigation_agent = $NavigationAgent3D
+
+
 var cell_count: int = 0
 
-var cell_spacing: float =  1.0
+var cell_spacing: float =  1.5
 
 var lead_cell: cell
 var cells: Array[cell]
@@ -12,29 +15,32 @@ enum Formation {RECTANGLE}
 
 
 func _ready():
-	pass
+	$"..".action_raycast_hit.connect(_on_action_raycast_hit)
 
 func _process(delta):
 	pass
 
-func update_selected_units():
+
+
+func add_selected_units():
 	for unit in get_tree().get_nodes_in_group($"..".selected_units_group):
 		cells.append(cell.new())
 		cells[cell_count].unit = unit
-		#print("adding " + str(unit) + " to nav array")
 		cell_count += 1
-	lead_cell = cells[0]
-	#print(str(cell_count) + " total units")
-	global_position = lead_cell.unit.global_position
+	if cell_count >= 1:
+		lead_cell = cells[0]
+		global_position = lead_cell.unit.global_position
 	
 	build_formation(Formation.RECTANGLE)
+
+
 
 func build_formation(formation: Formation):
 	if cell_count <= 1: return
 	
 	match formation:
-		Formation.RECTANGLE: #general form for now is ~= 2x1 rectangle
-			var rect_width: int = int(ceil(float(cell_count) / 2.0)) #stinky, might want to rework this conversion
+		Formation.RECTANGLE:
+			var rect_width: int = int(ceil(float(cell_count) / 3.0)) #this controls the depth that units will stack to
 			var rect_depth: int = int(ceil(cell_count / float(rect_width)))
 			var grid_pointer: Vector2 = Vector2(0, 0)
 			var entry_index: int = 0
@@ -125,11 +131,21 @@ func build_formation(formation: Formation):
 					
 				entry_index+= 1
 
-func set_unit_target_position():
+func set_unit_target_position(position):
 	for entry in cells:
-		var cell_position = Vector3(entry.formation_position.x, 0, entry.formation_position.y)
-		pass
-	pass
+		var cell_position = Vector3(entry.formation_position.x, 0, entry.formation_position.y).rotated(Vector3(0,1,0), global_rotation.y)
+		entry.unit.navigation_agent.set_target_position(position + cell_position)
+		#print("Setting " + str(entry.unit) + " target postition to " + str(cell_position + position))
+
+
+
+func _on_action_raycast_hit(action):
+	var action_direction = action.position - global_position 
+	var new_rotation = atan2(-action_direction.x, -action_direction.z)
+	global_rotation.y = new_rotation
+	set_unit_target_position(action.position)
+
+
 
 class cell:
 	var unit

@@ -27,9 +27,6 @@ func _process(delta):
 				global_position.z += pan_speed * delta
 		
 		
-		#---------
-		# zooming
-		#---------
 		var target_position = $Camera3D.position
 		
 		if Input.is_action_just_released("mouse_wheel_up") && $Camera3D.position.y >= 3.0:

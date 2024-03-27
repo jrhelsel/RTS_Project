@@ -53,7 +53,7 @@ func _input(event):
 				$CameraRig.rotation.x = vertical_rotation
 		
 		if Input.get_vector("left", "right", "forward", "backward"):
-			navigation_agent_3d.set_target_position(position)
+			navigation_agent.set_target_position(position)
 			navigation_interrupted = true
 			
 		if Input.is_action_just_pressed("jump") and is_on_floor():
@@ -113,7 +113,7 @@ func handle_action(action):
 	if action.is_empty() or !is_in_group(selected_units_group): return
 	
 	if !Input.get_vector("left", "right", "forward", "backward"):	
-		navigation_agent_3d.set_target_position(action.position)
+		#navigation_agent.set_target_position(action.position)
 		navigation_interrupted = false
 
 
